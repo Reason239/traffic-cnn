@@ -5,7 +5,7 @@ from copy import deepcopy
 import comet_ml
 import numpy as np
 from sklearn.metrics import confusion_matrix
-from tqdm.auto import trange
+from tqdm.auto import trange, tqdm
 from dataset import TRAFFIC_LABELS
 
 
@@ -108,6 +108,19 @@ class Trainer:
             tqdm_range.set_postfix(train_loss=train_loss, val_loss=val_loss,
                                    train_acc=train_acc, val_acc=val_acc)
         print('Finish training')
+
+    def predict(self, test_dataloader):
+        all_preds_arrays = []
+        self.model.to(self.device)
+        self.model.eval()
+        for images in tqdm(test_dataloader):
+            images = images.to(self.device)
+            output = self.model(images)
+            _, preds = torch.max(output.data, 1)
+            preds = preds.cpu().numpy()
+            all_preds_arrays.append(preds)
+        all_preds = np.concatenate(all_preds_arrays, axis=None)
+        return all_preds
 
 
 def find_lr(model, optimizer_gen, min_lr, max_lr, num_epochs, train_dataloader, val_dataloader, criterion, device,

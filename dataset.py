@@ -66,6 +66,7 @@ class MyDataset(Dataset):
 
     def __getitem__(self, idx):
         pic_id = self.data_anno.iloc[idx]['id']
+        # print(os.path.join(self.data_dir / 'pic' / f'{pic_id}.jpg'))
         image = cv2.imread(os.path.join(self.data_dir / 'pic' / f'{pic_id}.jpg'))
         # print(self.data_dir / f'{pic_id}.jpg')
         image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)

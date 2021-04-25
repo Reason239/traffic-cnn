@@ -58,7 +58,8 @@ if __name__ == '__main__':
                               'category': [TRAFFIC_LABELS_TO_NUM[label] for label in data_anno_raw['category'].values]})
     data_size = len(data_anno)
     test_size = data_size // 5
-    train_anno, val_anno = train_test_split(data_anno, test_size=test_size, stratify=data_anno['category'])
+    train_anno, val_anno = train_test_split(data_anno, test_size=test_size, stratify=data_anno['category'],
+                                            random_state=42)
     train_dataset = MyDataset(data_dir=data_path_root, data_anno=train_anno, phase='train')
     val_dataset = MyDataset(data_dir=data_path_root, data_anno=val_anno, phase='eval')
     train_dataloader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True, num_workers=0)
@@ -81,3 +82,11 @@ if __name__ == '__main__':
     trainer.fit()
 
     # Prediction
+    data_path_root_test = pathlib.Path('test/')
+    test_anno = pd.DataFrame({'id': [f'pic{num:06}' for num in range(10699)]})
+    test_dataset = MyDataset(data_dir=data_path_root_test, data_anno=test_anno, phase='test')
+    test_dataloader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False, num_workers=0)
+    preds = trainer.predict(test_dataloader)
+    submit = pd.DataFrame({'id': [f'pic{num:06}' for num in range(10699)],
+                           'category': [TRAFFIC_LABELS[pred] for pred in preds]})
+    submit.to_csv(save_path / 'submit.csv')
