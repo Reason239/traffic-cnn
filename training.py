@@ -9,41 +9,11 @@ from tqdm.auto import trange
 from dataset import TRAFFIC_LABELS
 
 
-class Dataset:
-    """
-    Utility class to hold training and validation data
-    """
-
-    def __init__(self, train_X, train_y, val_X, val_y):
-        self.train_X = train_X
-        self.train_y = train_y
-        self.val_X = val_X
-        self.val_y = val_y
-
-
 class Trainer:
-    """
-    Trainer of the neural network models
-    Perform mini-batch SGD with the specified data, model,
-    training parameters and optimization rule
-    """
-
     def __init__(self, model, train_dataloader, val_dataloader, criterion, optimizer, scheduler, device,
                  labels=TRAFFIC_LABELS, num_epochs=20, batch_size=20, batches_per_epoch=-1,
                  comet_experiment: comet_ml.Experiment = None, save_path=None):
-        """
-        Initializes the trainer
 
-        Arguments:
-        model - neural network model
-        dataset, instance of Dataset class - data to train on
-        optim - optimization method (see optim.py)
-        num_epochs, int - number of epochs to train
-        batch_size, int - batch size
-        learning_rate, float - initial learning rate
-        learning_rate_decal, float - ratio for decaying learning rate
-           every epoch
-        """
         self.model = model
         self.train_dataloader = train_dataloader
         self.val_dataloader = val_dataloader

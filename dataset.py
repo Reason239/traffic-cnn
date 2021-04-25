@@ -59,8 +59,8 @@ class MyDataset(Dataset):
     def __init__(self, data_dir, data_anno, phase='train', transform=alb_transforms):
         self.data_dir = data_dir
         self.data_anno = data_anno
-        self.transform = transform
         self.phase = phase
+        self.transform = transform
 
     def __getitem__(self, idx):
         pic_id = self.data_anno.iloc[idx]['id']

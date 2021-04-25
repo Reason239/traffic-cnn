@@ -184,6 +184,9 @@ def small_resnet8():
 def small_resnet14():
     return SmallerResNet(BasicBlock, [2, 2, 2], 5, [16, 16, 32, 32, None], zero_init_residual=True)
 
+def test_model(img_size=64):
+    model = nn.Sequential(nn.Conv2d(3, 3, 3), nn.ReLU(), nn.Flatten(), nn.Linear(3 * (img_size-2)**2, 5))
+    return model
 
 if __name__ == '__main__':
     resnet = SmallerResNet(BasicBlock, [2, 2, 2], 5, [16, 16, 32, 32, None], zero_init_residual=True)
