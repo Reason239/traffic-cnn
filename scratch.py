@@ -26,8 +26,10 @@
 # train, test = train_test_split(data, test_size=len(data)//5, stratify=data['category'])
 # # print(train.head())
 
-import numpy as np
-a = np.array([[0, 1], [2, 3]])
-b = 10
-a =  a / b
-print(a)
+import comet_ml
+COMET_API_KEY = 'oh07wzIdnbJ3Obu4mEDzNT9MF'
+comet_experiment = comet_ml.Experiment(api_key=COMET_API_KEY, project_name='Traffic CNN',
+                                       log_git_patch=False, log_git_metadata=False,
+                                       auto_output_logging=False,
+                                       auto_histogram_weight_logging=False, auto_histogram_gradient_logging=False)
+print('Done')

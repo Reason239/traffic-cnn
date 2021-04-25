@@ -49,10 +49,11 @@ class Trainer:
 
         for images, labels in dataloader:
             images, labels = images.to(self.device), labels.to(self.device)
+            if phase == 'train':
+                self.optimizer.zero_grad()
             output = self.model(images)
             batch_loss = self.criterion(output, labels)
             if phase == 'train':
-                self.optimizer.zero_grad()
                 batch_loss.backward()
                 self.optimizer.step()
             batch_loss_float = batch_loss.cpu().item()
@@ -87,9 +88,6 @@ class Trainer:
         return loss, accuracy
 
     def fit(self):
-        """
-        Trains a model
-        """
         # Train loop (add gradient logging?)
         # Val loop (add confusion matrix logging?)
         # Scheduler update

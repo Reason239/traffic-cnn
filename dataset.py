@@ -56,11 +56,13 @@ alb_transforms = AlbuWrapper(alb.Compose(
 
 
 class MyDataset(Dataset):
-    def __init__(self, data_dir, data_anno, phase='train', transform=alb_transforms):
+    def __init__(self, data_dir, data_anno, phase='train', transform=alb_transforms, max_size=None):
         self.data_dir = data_dir
         self.data_anno = data_anno
         self.phase = phase
         self.transform = transform
+        if max_size is not None:
+            self.data_anno = self.data_anno[:max_size]
 
     def __getitem__(self, idx):
         pic_id = self.data_anno.iloc[idx]['id']

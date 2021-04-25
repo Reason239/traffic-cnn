@@ -6,6 +6,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from tqdm.auto import tqdm
 import pathlib
+from dataset import TRAFFIC_LABELS_TO_NUM
 
 alb_transforms = [
     alb.IAAAdditiveGaussianNoise(p=1),
@@ -58,8 +59,10 @@ def one_by_one():
             fig.savefig(path)
 
 def composition():
-    data_dir = 'train_val/pic'
-    data_anno = pd.read_csv('train_val/keys.csv')
+    data_dir = pathlib.Path('train_val')
+    data_anno_raw = pd.read_csv('train_val/keys.csv')
+    data_anno = pd.DataFrame({'id': data_anno_raw['id'].values,
+                              'category': [TRAFFIC_LABELS_TO_NUM[label] for label in data_anno_raw['category'].values]})
     orig = MyDataset(data_dir, data_anno, transform=None)
     str_transform = "Composition"
     path = f'aug_pics/{str_transform}.png'

@@ -2,13 +2,13 @@ import comet_ml
 import torch
 import torch.nn as nn
 from torch.utils.data import DataLoader
-from torch.optim import SGD
+from torch.optim import SGD, Adam
 from dataset import MyDataset, tensor2img, TRAFFIC_LABELS, TRAFFIC_LABELS_TO_NUM
 import pandas as pd
 import matplotlib.pyplot as plt
 from training import Trainer, find_lr
-from dataset import MyDataset
-from model import small_resnet8, small_resnet14
+from dataset import MyDataset, FIXED_IMG_HEIGHT
+from model import small_resnet8, small_resnet14, test_model
 from sklearn.model_selection import train_test_split
 import pathlib
 
@@ -29,23 +29,25 @@ COMET_API_KEY = 'oh07wzIdnbJ3Obu4mEDzNT9MF'
 
 if __name__ == '__main__':
     # Hyperparameters
+    name = 'test'
     max_lr = 1e-3
     min_lr = 1e-4
     device = 'cuda'
-    num_epochs = 3
-    batch_size = 256
+    num_epochs = 10
+    batch_size = 2048
     batches_per_epoch = -1
     hyperparameters = dict(max_lr=max_lr, min_lr=min_lr, device=device, num_epochs=num_epochs, batch_size=batch_size)
 
     # Comet
     comet_experiment = comet_ml.Experiment(api_key=COMET_API_KEY, project_name='Traffic CNN',
+                                           auto_output_logging=False, log_git_patch=False, log_git_metadata=False,
                                            auto_histogram_weight_logging=True, auto_histogram_gradient_logging=True)
     comet_experiment.log_parameters(hyperparameters)
-    comet_experiment.set_name('test')
+    comet_experiment.set_name(name)
     # comet_experiment = None
 
     # Model
-    model = small_resnet14()
+    model = small_resnet8()
     print(f'Number of parameters in model: ',
           sum(p.numel() for p in model.parameters() if p.requires_grad))
 
@@ -69,11 +71,13 @@ if __name__ == '__main__':
     criterion = nn.CrossEntropyLoss()
 
     # Training
-    optim_gen = lambda parameters, lr: SGD(parameters, lr=lr)
+    # optim_gen = lambda parameters, lr: SGD(parameters, lr=lr)
     # find_lr(model, optim_gen, min_lr, max_lr, num_epochs, train_dataloader, val_dataloader, criterion, device, batch_size,
     #         batches_per_epoch, comet_experiment)
+    save_path = pathlib.Path('models') / name
+    save_path.mkdir(parents=True, exist_ok=True)
     trainer = Trainer(model, train_dataloader, val_dataloader, criterion, optimizer, None, device, TRAFFIC_LABELS,
-                      num_epochs, batch_size, batches_per_epoch, comet_experiment, None)
+                      num_epochs, batch_size, batches_per_epoch, comet_experiment, save_path)
     trainer.fit()
 
     # Prediction
