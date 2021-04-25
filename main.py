@@ -29,7 +29,7 @@ COMET_API_KEY = 'oh07wzIdnbJ3Obu4mEDzNT9MF'
 
 if __name__ == '__main__':
     # Hyperparameters
-    name = 'small_14_adam_1em3_bs128'
+    name = 'small_14_adam_1em3_bs128_'
     max_lr = 1e-3
     min_lr = 1e-4
     device = 'cuda'

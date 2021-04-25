@@ -109,12 +109,14 @@ class Trainer:
                                    train_acc=train_acc, val_acc=val_acc)
         print('Finish training')
 
-    def predict(self, test_dataloader):
-        self.model.load_state_dict(self.save_path / 'best_model.pth')
+    def predict(self, test_dataloader, labels=False):
+        self.model.load_state_dict(torch.load(self.save_path / 'best_model.pth'))
         all_preds_arrays = []
         self.model.to(self.device)
         self.model.eval()
         for images in tqdm(test_dataloader):
+            if labels:
+                images = images[0]
             images = images.to(self.device)
             output = self.model(images)
             _, preds = torch.max(output.data, 1)
