@@ -29,12 +29,12 @@ COMET_API_KEY = 'oh07wzIdnbJ3Obu4mEDzNT9MF'
 
 if __name__ == '__main__':
     # Hyperparameters
-    name = 'small_14_adam_1em3'
+    name = 'small_14_adam_1em3_bs128'
     max_lr = 1e-3
     min_lr = 1e-4
     device = 'cuda'
-    num_epochs = 10
-    batch_size = 2048
+    num_epochs = 20
+    batch_size = 128
     batches_per_epoch = -1
     hyperparameters = dict(max_lr=max_lr, min_lr=min_lr, device=device, num_epochs=num_epochs, batch_size=batch_size)
 
@@ -79,7 +79,10 @@ if __name__ == '__main__':
     save_path.mkdir(parents=True, exist_ok=True)
     trainer = Trainer(model, train_dataloader, val_dataloader, criterion, optimizer, None, device, TRAFFIC_LABELS,
                       num_epochs, batch_size, batches_per_epoch, comet_experiment, save_path)
-    trainer.fit()
+    try:
+        trainer.fit()
+    except KeyboardInterrupt:
+        pass
 
     # Prediction
     data_path_root_test = pathlib.Path('test/')
@@ -90,3 +93,5 @@ if __name__ == '__main__':
     submit = pd.DataFrame({'id': [f'pic{num:06}' for num in range(10699)],
                            'category': [TRAFFIC_LABELS[pred] for pred in preds]})
     submit.to_csv(save_path / 'submit.csv')
+
+    print('Done')
