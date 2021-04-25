@@ -110,6 +110,7 @@ class Trainer:
         print('Finish training')
 
     def predict(self, test_dataloader):
+        self.model.load_state_dict(self.save_path / 'best_model.pth')
         all_preds_arrays = []
         self.model.to(self.device)
         self.model.eval()

@@ -29,7 +29,7 @@ COMET_API_KEY = 'oh07wzIdnbJ3Obu4mEDzNT9MF'
 
 if __name__ == '__main__':
     # Hyperparameters
-    name = 'test'
+    name = 'small_14_adam_1em3'
     max_lr = 1e-3
     min_lr = 1e-4
     device = 'cuda'
@@ -47,7 +47,7 @@ if __name__ == '__main__':
     # comet_experiment = None
 
     # Model
-    model = small_resnet8()
+    model = small_resnet14()
     print(f'Number of parameters in model: ',
           sum(p.numel() for p in model.parameters() if p.requires_grad))
 
@@ -62,11 +62,11 @@ if __name__ == '__main__':
                                             random_state=42)
     train_dataset = MyDataset(data_dir=data_path_root, data_anno=train_anno, phase='train')
     val_dataset = MyDataset(data_dir=data_path_root, data_anno=val_anno, phase='eval')
-    train_dataloader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True, num_workers=0)
-    val_dataloader = DataLoader(val_dataset, batch_size=batch_size, shuffle=False, num_workers=0)
+    train_dataloader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True, num_workers=4)
+    val_dataloader = DataLoader(val_dataset, batch_size=batch_size, shuffle=False, num_workers=4)
 
     # Optimizer
-    optimizer = SGD(model.parameters(), lr=min_lr)
+    optimizer = Adam(model.parameters(), lr=1e-3)
 
     # Criterion (add weights?)
     criterion = nn.CrossEntropyLoss()
