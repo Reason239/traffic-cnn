@@ -56,6 +56,10 @@ class Trainer:
             if phase == 'train':
                 batch_loss.backward()
                 self.optimizer.step()
+                if self.scheduler:
+                    self.scheduler.step()
+                    if self.comet_experiment:
+                        self.comet_experiment.log_metric('lr', self.scheduler.get_last_lr())
             batch_loss_float = batch_loss.cpu().item()
             loss += batch_loss_float
             if self.comet_experiment:
@@ -88,11 +92,6 @@ class Trainer:
         return loss, accuracy
 
     def fit(self):
-        # Train loop (add gradient logging?)
-        # Val loop (add confusion matrix logging?)
-        # Scheduler update
-        # Comet logging and model snapshoting
-
         print('Begin training')
 
         self.best_val_acc = -1
@@ -103,8 +102,6 @@ class Trainer:
         for _ in tqdm_range:
             train_loss, train_acc = self.epoch_loop(phase='train')
             val_loss, val_acc = self.epoch_loop(phase='eval')
-            if self.scheduler:
-                self.scheduler.step()
             tqdm_range.set_postfix(train_loss=train_loss, val_loss=val_loss,
                                    train_acc=train_acc, val_acc=val_acc)
         print('Finish training')

@@ -1,16 +1,14 @@
 from dataset import MyDataset
 from model import small_resnet14
 from training import Trainer
-from dataset import TRAFFIC_LABELS, TRAFFIC_LABELS_TO_NUM
+from dataset import TRAFFIC_LABELS
 import pathlib
 import pandas as pd
 from torch.utils.data import DataLoader
-from tqdm.auto import trange
-import numpy as np
 from scipy.stats import mode
 import torch
 
-name = 'small_14_adam_1em3_bs128'
+name = 'small_14_adam_1em3_bs128_'
 base_path = pathlib.Path('models') / name
 state_dict_path = base_path / 'best_model.pth'
 

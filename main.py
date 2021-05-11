@@ -12,24 +12,10 @@ from model import small_resnet8, small_resnet14, test_model
 from sklearn.model_selection import train_test_split
 import pathlib
 
-COMET_API_KEY = 'oh07wzIdnbJ3Obu4mEDzNT9MF'
-
-# TODO:
-# dataset
-# потестить, что делаеют augmentations
-# augmentations
-# net
-# comet
-# find lr
-# scheduler
-# попробовать кросс-энтропию с весами
-# тест тайм ауг
-# сделать паддинг двусторонним?
-# Manual color filtering and blob detection?
 
 if __name__ == '__main__':
     # Hyperparameters
-    name = 'small_14_adam_1em3_bs128_'
+    name = 'small_14_adam_1em3_cycle_20'
     max_lr = 1e-3
     min_lr = 1e-4
     device = 'cuda'
@@ -62,14 +48,18 @@ if __name__ == '__main__':
                                             random_state=42)
     train_dataset = MyDataset(data_dir=data_path_root, data_anno=train_anno, phase='train')
     val_dataset = MyDataset(data_dir=data_path_root, data_anno=val_anno, phase='eval')
-    train_dataloader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True, num_workers=4)
-    val_dataloader = DataLoader(val_dataset, batch_size=batch_size, shuffle=False, num_workers=4)
+    train_dataloader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True, num_workers=0)
+    val_dataloader = DataLoader(val_dataset, batch_size=batch_size, shuffle=False, num_workers=0)
 
     # Optimizer
     optimizer = Adam(model.parameters(), lr=1e-3)
 
     # Criterion (add weights?)
     criterion = nn.CrossEntropyLoss()
+
+    # Scheduler
+    scheduler = torch.optim.lr_scheduler.OneCycleLR(optimizer, max_lr=1.5 * 1e-3, steps_per_epoch=len(train_dataloader),
+                                                    epochs=num_epochs)
 
     # Training
     # optim_gen = lambda parameters, lr: SGD(parameters, lr=lr)
